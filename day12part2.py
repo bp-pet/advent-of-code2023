@@ -14,7 +14,7 @@ for line_raw in lines_raw:
 new_lines = []
 for line in lines:
     temp = list(line[0])
-    new_conds = "".join((temp + ["?"]) * 5 + ["?"])
+    new_conds = "".join((temp + ["?"]) * 5)[:-1]
     new_counts = line[1] * 5
     new_lines.append((new_conds, new_counts))
 lines = new_lines
@@ -65,11 +65,12 @@ def try_branches(line):
     return score
 
 result = 0
-for line in lines[5:6]:
+for line in lines:
     print(line)
     # go through the question marks from left to right, branch on each one being
     # yes/no, then cut a lot of branches because they are not feasible
-    result += try_branches(line)
+    # result += try_branches(line)
+    # print(try_branches(line))
     # print(result)
 
 print(result)
