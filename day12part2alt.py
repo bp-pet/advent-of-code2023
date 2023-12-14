@@ -13,13 +13,13 @@ for line_raw in lines_raw:
     lines.append((conditions, counts))
 
 # make into 5
-# new_lines = []
-# for line in lines:
-#     temp = list(line[0])
-#     new_conds = "".join((temp + ["?"]) * 5)[:-1]
-#     new_counts = line[1] * 5
-#     new_lines.append((new_conds, new_counts))
-# lines = new_lines
+new_lines = []
+for line in lines:
+    temp = list(line[0])
+    new_conds = "".join((temp + ["?"]) * 5)[:-1]
+    new_counts = line[1] * 5
+    new_lines.append((new_conds, new_counts))
+lines = new_lines
 
 class BallDistributor:
     def __init__(self, line):
@@ -38,7 +38,6 @@ class BallDistributor:
         last_bit = start_seq + self.sequence[distribution.size]
         for i in range(start_gap, start_seq):
             if self.string[i] == "#":
-                # raise Exception TODO this might still be implementable
                 return False
         for i in range(start_seq, last_bit):
             if self.string[i] == ".":
@@ -46,7 +45,6 @@ class BallDistributor:
         if last_bit < self.line_string_size and self.string[last_bit] == "#":
             return False
         if distribution.size == self.line_sequence_size:
-            # if distribution is complete, check rest of string as well
             for i in range(last_bit, self.line_string_size):
                 if self.string[i] == ".":
                     return False
@@ -56,26 +54,26 @@ class BallDistributor:
         if self.spaces_to_distribute == 0:
             return 1
         self.lookup_array = - np.ones([self.line_sequence_size, self.spaces_to_distribute + 1])
-        print(self.loop(Distribution(0, 0)))
         return int(self.loop(Distribution(0, 0)))
+    
+    def check_last_bits(self, distribution):
+        sequence_end = distribution.summ + distribution.size + sum(self.sequence)
+        for i in range(sequence_end, self.line_string_size):
+            if self.string[i] == "#":
+                return False
+        return True
     
     def loop(self, distribution):
         if distribution.size == self.line_sequence_size:
-            return 1
+            return self.check_last_bits(distribution)
         if self.lookup_array[distribution.size, distribution.summ] != -1:
             return self.lookup_array[distribution.size, distribution.summ]
         balls_left_to_distribute = self.spaces_to_distribute - distribution.summ
         result = 0
         for i in range(balls_left_to_distribute + 1):
             if self.is_feasible(distribution, i):
-                print(self.visualize_dist(distribution, i), self.loop(distribution.increment(i)), distribution.size)
                 result += self.loop(distribution.increment(i))
         self.lookup_array[distribution.size, distribution.summ] = result
-        return result
-    
-    def visualize_dist(self, distribution, addition):
-        result = "x" * (distribution.summ + sum(self.sequence[:distribution.size]) + distribution.size)
-        result += "." * addition
         return result
 
 class Distribution:
@@ -90,8 +88,10 @@ class Distribution:
 
 result = 0
 
-test = "."
-for line in lines[2:3]:
-    print(line[0])
-    print(line[1])
-    this = BallDistributor(line).main()
+for line in lines:
+    # print(line[0], len(line[0]))
+    # print(line[1])
+    result += BallDistributor(line).main()
+    # print(this)
+
+print(result)
