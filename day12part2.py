@@ -49,7 +49,23 @@ def check_validity_of_complete(line):
     For a line without ?s, check if it is valid.
     """
     conditions_lengths = [j for j in [len(i) for i in line[0].split(".")] if j != 0]
+    on_one = False
+    for i in range(len(line[0])):
+        c = line[0][i]
+        if c == "#":
+            pass
     return line[1] == conditions_lengths
+
+def find_next_sequence(string, search_start):
+    for i in range(search_start, len(string)):
+        if string[i] == "#":
+            found_start = i
+            break
+    for i in range(found_start + 1, len(string)):
+        if string[i] == "#":
+            found_end = i
+            break
+    return (found_start, found_end)
 
 def try_branches(line):
     if line[0].count("?") == 0:

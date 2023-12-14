@@ -21,35 +21,42 @@ lines = new_lines
 
 class BallDistributor:
     def __init__(self, line):
-        self.line = line
-        total_size = len(line[0])
-        required = sum(line[1]) + len(line[1]) - 1
-        self.num_balls = total_size - required
-        self.num_buckets = len(line[1]) + 1
+        self.string = line[0]
+        self.sequence = line[1]
+        self.line_string_size = len(self.string)
+        self.line_sequence_size = len(self.sequence)
+        required = sum(self.sequence) + self.line_sequence_size - 1
+        self.num_balls = self.line_string_size - required
+        self.num_buckets = self.line_sequence_size + 1
 
     def check_distribution(self, distribution):
-        built = self.generate_output(distribution)
-        for i in range(len(built)):
-            if self.line[0][i] == "#" and built[i] == ".":
+        # FIXES: DON'T GENERATE WHOLE STRING, JUST CHECK IF LAST ADDITION TO DIST WORKS
+        # previous ones are already checked
+        old_size = len(distribution) - 1
+        if old_size == -1:
+            return True
+        start_gap = sum(self.sequence[:old_size]) + old_size + sum(distribution[:old_size])
+        start_seq = start_gap + distribution[-1]
+        last_bit = start_seq + self.sequence[old_size]
+        for i in range(start_gap, start_seq):
+            if self.string[i] == "#":
                 raise Exception
-            elif self.line[0][i] == "." and built[i] == "#":
+        for i in range(start_seq, last_bit):
+            if self.string[i] == ".":
                 return False
+        if last_bit < self.line_string_size and self.string[last_bit] == "#":
+            return False
+        if len(distribution) == self.line_sequence_size:
+            for i in range(last_bit, self.line_string_size):
+                if self.string[i] == ".":
+                    return False
         return True
-    
-    def generate_output(self, distribution):
-        built = ""
-        for i in range(len(distribution)):
-            built += "." * distribution[i]
-            if i < len(self.line[1]):
-                built += "#" * self.line[1][i] + "."
-        built = built[:-1]
-        return built
 
     def distribute_balls(self, distribution):
         if self.check_distribution(distribution):
             num_distributed = sum(distribution)
-            if len(distribution) == self.num_buckets:
-                return 1 if num_distributed == self.num_balls else 0
+            if len(distribution) == len(self.sequence):
+                return 1
             left_to_distribute = self.num_balls - num_distributed
             result = 0
             for i in range(left_to_distribute + 1):
@@ -61,10 +68,21 @@ class BallDistributor:
         else:
             return 0
 
-result = 0
-for line in lines[6:7]:
-    # print(result)
-    result += BallDistributor(line).distribute_balls([])
-    print(line)
+class Distribution:
+    def __init__(self, dist_list):
+        self.dist_list = dist_list
+        self.number_of_elements = len(dist_list)
+        self.size = sum(dist_list)
 
-print(result)
+result = 0
+for line in lines:
+    result = BallDistributor(line).distribute_balls([])
+    print(result)
+
+# print(result)
+
+# ball = BallDistributor(lines[0])
+# print(ball.line)
+# # result = ball.check_distribution([0] * 15)
+# result = ball.distribute_balls([])
+# print(result)
