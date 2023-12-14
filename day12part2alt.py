@@ -1,4 +1,6 @@
-with open("day12demo.txt", 'r') as f:
+import numpy as np
+
+with open("day12.txt", 'r') as f:
     input = f.read()
 
 lines_raw = input.split("\n")
@@ -11,13 +13,13 @@ for line_raw in lines_raw:
     lines.append((conditions, counts))
 
 # make into 5
-new_lines = []
-for line in lines:
-    temp = list(line[0])
-    new_conds = "".join((temp + ["?"]) * 5)[:-1]
-    new_counts = line[1] * 5
-    new_lines.append((new_conds, new_counts))
-lines = new_lines
+# new_lines = []
+# for line in lines:
+#     temp = list(line[0])
+#     new_conds = "".join((temp + ["?"]) * 5)[:-1]
+#     new_counts = line[1] * 5
+#     new_lines.append((new_conds, new_counts))
+# lines = new_lines
 
 class BallDistributor:
     def __init__(self, line):
@@ -26,63 +28,70 @@ class BallDistributor:
         self.line_string_size = len(self.string)
         self.line_sequence_size = len(self.sequence)
         required = sum(self.sequence) + self.line_sequence_size - 1
-        self.num_balls = self.line_string_size - required
-        self.num_buckets = self.line_sequence_size + 1
+        self.spaces_to_distribute = self.line_string_size - required
 
-    def check_distribution(self, distribution):
-        # FIXES: DON'T GENERATE WHOLE STRING, JUST CHECK IF LAST ADDITION TO DIST WORKS
-        # previous ones are already checked
-        old_size = len(distribution) - 1
-        if old_size == -1:
-            return True
-        start_gap = sum(self.sequence[:old_size]) + old_size + sum(distribution[:old_size])
-        start_seq = start_gap + distribution[-1]
-        last_bit = start_seq + self.sequence[old_size]
+        self.lookup_array = None
+
+    def is_feasible(self, distribution, next):
+        start_gap = sum(self.sequence[:distribution.size]) + distribution.size + distribution.summ
+        start_seq = start_gap + next
+        last_bit = start_seq + self.sequence[distribution.size]
         for i in range(start_gap, start_seq):
             if self.string[i] == "#":
-                raise Exception
+                # raise Exception TODO this might still be implementable
+                return False
         for i in range(start_seq, last_bit):
             if self.string[i] == ".":
                 return False
         if last_bit < self.line_string_size and self.string[last_bit] == "#":
             return False
-        if len(distribution) == self.line_sequence_size:
+        if distribution.size == self.line_sequence_size:
+            # if distribution is complete, check rest of string as well
             for i in range(last_bit, self.line_string_size):
                 if self.string[i] == ".":
                     return False
         return True
 
-    def distribute_balls(self, distribution):
-        if self.check_distribution(distribution):
-            num_distributed = sum(distribution)
-            if len(distribution) == len(self.sequence):
-                return 1
-            left_to_distribute = self.num_balls - num_distributed
-            result = 0
-            for i in range(left_to_distribute + 1):
-                try:
-                    result += self.distribute_balls(distribution + [i])
-                except:
-                    break
-            return result
-        else:
-            return 0
+    def main(self):
+        if self.spaces_to_distribute == 0:
+            return 1
+        self.lookup_array = - np.ones([self.line_sequence_size, self.spaces_to_distribute + 1])
+        print(self.loop(Distribution(0, 0)))
+        return int(self.loop(Distribution(0, 0)))
+    
+    def loop(self, distribution):
+        if distribution.size == self.line_sequence_size:
+            return 1
+        if self.lookup_array[distribution.size, distribution.summ] != -1:
+            return self.lookup_array[distribution.size, distribution.summ]
+        balls_left_to_distribute = self.spaces_to_distribute - distribution.summ
+        result = 0
+        for i in range(balls_left_to_distribute + 1):
+            if self.is_feasible(distribution, i):
+                print(self.visualize_dist(distribution, i), self.loop(distribution.increment(i)), distribution.size)
+                result += self.loop(distribution.increment(i))
+        self.lookup_array[distribution.size, distribution.summ] = result
+        return result
+    
+    def visualize_dist(self, distribution, addition):
+        result = "x" * (distribution.summ + sum(self.sequence[:distribution.size]) + distribution.size)
+        result += "." * addition
+        return result
 
 class Distribution:
-    def __init__(self, dist_list):
-        self.dist_list = dist_list
-        self.number_of_elements = len(dist_list)
-        self.size = sum(dist_list)
+    def __init__(self, size, summ):
+        self.size = size
+        self.summ = summ
+    
+    def increment(self, amount):
+        return Distribution(self.size + 1, self.summ + amount)
+
+# from day12part2 import try_branches as naive
 
 result = 0
-for line in lines:
-    result = BallDistributor(line).distribute_balls([])
-    print(result)
 
-# print(result)
-
-# ball = BallDistributor(lines[0])
-# print(ball.line)
-# # result = ball.check_distribution([0] * 15)
-# result = ball.distribute_balls([])
-# print(result)
+test = "."
+for line in lines[2:3]:
+    print(line[0])
+    print(line[1])
+    this = BallDistributor(line).main()

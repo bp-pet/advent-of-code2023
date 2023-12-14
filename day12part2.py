@@ -1,4 +1,4 @@
-with open("day12demo.txt", 'r') as f:
+with open("day12.txt", 'r') as f:
     input = f.read()
 
 lines_raw = input.split("\n")
@@ -11,13 +11,13 @@ for line_raw in lines_raw:
     lines.append((conditions, counts))
 
 # make into 5
-new_lines = []
-for line in lines:
-    temp = list(line[0])
-    new_conds = "".join((temp + ["?"]) * 5)[:-1]
-    new_counts = line[1] * 5
-    new_lines.append((new_conds, new_counts))
-lines = new_lines
+# new_lines = []
+# for line in lines:
+#     temp = list(line[0])
+#     new_conds = "".join((temp + ["?"]) * 5)[:-1]
+#     new_counts = line[1] * 5
+#     new_lines.append((new_conds, new_counts))
+# lines = new_lines
 
 def check_validity_of_partial(line):
     """
@@ -80,13 +80,16 @@ def try_branches(line):
             score += try_branches(alt_line)
     return score
 
-result = 0
+results = ""
+summ = 0
 for line in lines:
-    print(line)
+    # print(line)
     # go through the question marks from left to right, branch on each one being
     # yes/no, then cut a lot of branches because they are not feasible
-    # result += try_branches(line)
-    # print(try_branches(line))
-    # print(result)
+    results += str(try_branches(line)) + "\n"
+    summ += try_branches(line)
 
-print(result)
+with open("test2.txt", 'w') as f:
+    f.write(results)
+
+print(summ)
