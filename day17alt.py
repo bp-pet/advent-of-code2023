@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 
-with open("day17.txt", 'r') as f:
+with open("day17demo.txt", 'r') as f:
     input = f.read()
 
 # input = "12\n34"
@@ -10,8 +10,8 @@ directions = ["r", "l", "u", "d"]
 
 grid = np.array([list(i) for i in input.split("\n")], dtype=int)
 
-# create and add nodes, 13 for each original node:
-# no movement, 1 to 3 for each of 4 directions
+# create and add nodes, 12 for each original node (except first with 13):
+# 1 to 3 for each of 4 directions
 G = nx.DiGraph()
 node_list = []
 counter = 0
@@ -28,6 +28,7 @@ for i in range(grid.shape[0]):
                 node_list.append((counter, temp))
                 counter += 1
 G.add_nodes_from(node_list)
+print("Finished adding nodes")
 
 def get_new_node_dict(d: dict, direction: str):
     # get the data representation of given node data if it were
@@ -47,13 +48,13 @@ def get_new_node_dict(d: dict, direction: str):
     if direction == "d":
         target_node_data["x"] += 1
     return target_node_data
-    
-print("Starting to add edges")
+
 edge_weights = {}
 nodes_data = G.nodes(data=True)
 # connect each node to each direction, if possible
 for direction in directions:
     for source_node_index, source_node_data in enumerate(nodes_data):
+        print(source_node_data)
         target_node_data = get_new_node_dict(source_node_data[1], direction)
         target_nodes = [n for n,v in G.nodes(data=True) if v == target_node_data]
         if len(target_nodes) == 0:
@@ -67,8 +68,9 @@ for direction in directions:
             G.add_edge(source_node_index, target_node_index)
             edge_weights[(source_node_index, target_node_index)] = {"weight": weight}
 nx.set_edge_attributes(G, edge_weights)
+print("Finished adding edges")
 
-print(G.nodes(data=True)[0])
+raise Exception
 
 start_node_index = 0
 target_node_indices = [n for n,v in G.nodes(data=True) if v["x"] == grid.shape[0] - 1 and v["y"] == grid.shape[1] - 1]

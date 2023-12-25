@@ -1,6 +1,7 @@
 import numpy as np
+import random
 
-l = ["a", "b", "c"]
 
-l.remove("a")
-print(l)
+A = ["a", "b", "c"]
+
+print(random.choice(A))
