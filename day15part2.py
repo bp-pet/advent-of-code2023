@@ -5,18 +5,15 @@ with open("day15.txt", 'r') as f:
 
 commands = input.split(",")
 
-
 def string_to_hash(string):
     hash = 0
     for c in string:
         hash = ((hash + ord(c)) * 17) % 256
     return hash
 
-
 boxes = []
 for i in range(256):
     boxes.append(OrderedDict())
-
 
 for command in commands:
     if len(command.split("-")) == 1:

@@ -1,3 +1,12 @@
+"""
+Heuristic method: pick random pairs of nodes and get the shortest path between them.
+Record which edges are used every time and keep track of how many times each edge has
+occured. This results in the top 3 seen edges being exactly the cut edges. This should not
+work on every possible input.
+
+Alternatively one could use a cut-finding method from networkx.
+"""
+
 import networkx as nx
 
 with open("day25.txt", "r") as f:
@@ -46,7 +55,7 @@ for c in connected_components:
     sizes.append(len(c))
 
 if len(sizes) != 2:
-    raise Exception("Something went wrong")
+    raise Exception("Removing given edges results in more or less than 2 components")
 
 result = sizes[0] * sizes[1]
 print(result)

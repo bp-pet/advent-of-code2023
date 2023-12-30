@@ -21,7 +21,11 @@ for line in lines:
     new_lines.append((new_conds, new_counts))
 lines = new_lines
 
-class BallDistributor:
+class GapDistributor:
+    """Distributes the gaps between the # sequences. This way it finds the number of
+    total arrangements.
+    """
+
     def __init__(self, line):
         self.string = line[0]
         self.sequence = line[1]
@@ -77,14 +81,18 @@ class BallDistributor:
         return result
 
 class Distribution:
+    """Refers to the distribution of spaces/gaps between the # sequences. Is defined by
+    size (how many of the gaps it contains) and sum (how many tiles it covers)."""
+
     def __init__(self, size, summ):
         self.size = size
         self.summ = summ
     
     def increment(self, amount):
+        """Create another distribution with one extra gap of given size added."""
         return Distribution(self.size + 1, self.summ + amount)
 
 result = 0
 for line in lines:
-    result += BallDistributor(line).main()
+    result += GapDistributor(line).main()
 print(result)

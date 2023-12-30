@@ -29,7 +29,7 @@ def check_number_of_openings():
         if grid[-1, j] != "#":
             counter += 1
     if counter > 2:
-        raise Exception("More than two openings on boundary")
+        raise Exception("More than two openings on boundary, not implemented")
 
 def check_for_bad_corners():
     """Check that there are no slopes on fork tiles"""
@@ -44,7 +44,7 @@ def check_for_bad_corners():
                     if grid[i, j + jj] in slopes:
                         counter += 1
                 if counter > 2:
-                    raise Exception("Encountered slope that is not on a straight path")
+                    raise Exception("Encountered slope that is not on a straight path, not implemented")
 
 # check_number_of_openings()
 # check_for_bad_corners()
@@ -92,8 +92,8 @@ adj = np.zeros([len(nodes), len(nodes)])
 
 def add_edge(node1, node2, weight, slope_type):
     """Add an edge to the adjacency matrix"""
-    # if slope_type is None:
-    #     raise Exception("Trail without slope not implemented")
+    if slope_type is None:
+        raise Exception("Trail without slope not implemented")
     if slope_type == -1:
         node1, node2 = node2, node1
     adj[nodes_dict[node1], nodes_dict[node2]] = weight
@@ -102,6 +102,8 @@ def get_direction(start_tile, end_tile):
     return (end_tile[0] - start_tile[0], end_tile[1] - start_tile[1])
 
 def determine_slope_type(slope, direction):
+    """Slope type is 1 if slope points towards the given direction
+    of movement, -1 otherwise."""
     if slope == ">" and direction == (0, 1):
         return -1
     elif slope == ">" and direction == (0, -1):
@@ -122,6 +124,7 @@ def determine_slope_type(slope, direction):
         raise Exception("Something wrong with slope")
 
 def grid_to_graph():
+    """Create a graph where the nodes are the junctions in the grid."""
     visited = np.zeros_like(grid, dtype=bool)
     for node in nodes:
         visited[node[0], node[1]] = True
@@ -171,7 +174,3 @@ for path in paths:
 
 result = max(path_lengths)
 print(result)
-
-# import matplotlib.pyplot as plt
-# nx.draw(G, pos=nodes)
-# plt.show()

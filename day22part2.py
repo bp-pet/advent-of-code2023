@@ -106,11 +106,10 @@ class Parser:
             blocks.append(Block(start_coords, end_coords))
         return Field(blocks)
 
-    
 field = Parser().parse_file("day22.txt")
 field.calculate_dependence()
 counts = field.get_block_counts()
 
-print(counts)
-print(sum(counts))
+result = sum(counts)
+print(result)
 

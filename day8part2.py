@@ -48,5 +48,5 @@ for p in current_pos:
 # find lcm of vals
 result = 1
 for i in vals:
-    result = result*i//gcd(result, i)
+    result = result * i // gcd(result, i)
 print(result)

@@ -19,7 +19,6 @@ for module in modules:
     a = np.array([list(i) for i in module.split("\n")])
     grids.append((a == "#").astype(int))
 
-
 def get_horizontal_mirrors(grid):
     horizontal_mirrors = []
     for i in range(grid.shape[0] - 1):
@@ -30,7 +29,6 @@ def get_horizontal_mirrors(grid):
         if np.sum(np.abs(diff)) == 1:
             horizontal_mirrors.append(i + 1)
     return horizontal_mirrors
-
 
 result = 0
 for grid in grids:

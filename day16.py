@@ -6,8 +6,6 @@ with open("day16.txt", 'r') as f:
 x_size = len(input.split("\n"))
 y_size = len(input.split("\n")[0])
 
-
-
 class Beam:
     def __init__(self, x, y, direction):
         self.x = x

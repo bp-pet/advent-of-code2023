@@ -15,40 +15,6 @@ def grid_to_string():
         result += "\n"
     return result
 
-def check_number_of_openings():
-    """Make sure the two given openings are the only ones"""
-    counter = 0
-    for i in range(grid.shape[0]):
-        if grid[i, 0] != "#":
-            counter += 1
-        if grid[i, -1] != "#":
-            counter += 1
-    for j in range(grid.shape[1]):
-        if grid[0, j] != "#":
-            counter += 1
-        if grid[-1, j] != "#":
-            counter += 1
-    if counter > 2:
-        raise Exception("More than two openings on boundary")
-
-def check_for_bad_corners():
-    """Check that there are no slopes on fork tiles"""
-    for i in range(grid.shape[0]):
-        for j in range(grid.shape[1]):
-            if grid[i, j] in slopes:
-                counter = 0
-                for ii in [-1, 1]:
-                    if grid[i + ii, j] in slopes:
-                        counter += 1
-                for jj in [-1, 1]:
-                    if grid[i, j + jj] in slopes:
-                        counter += 1
-                if counter > 2:
-                    raise Exception("Encountered slope that is not on a straight path")
-
-# check_number_of_openings()
-# check_for_bad_corners()
-
 def get_neighbors(pos):
     """Get all non # tiles around a given tile"""
     neighbors = []
@@ -104,6 +70,8 @@ def get_direction(start_tile, end_tile):
     return (end_tile[0] - start_tile[0], end_tile[1] - start_tile[1])
 
 def determine_slope_type(slope, direction):
+    """Slope type is 1 if slope points towards the given direction
+    of movement, -1 otherwise."""
     if slope == ">" and direction == (0, 1):
         return -1
     elif slope == ">" and direction == (0, -1):
@@ -124,6 +92,7 @@ def determine_slope_type(slope, direction):
         raise Exception("Something wrong with slope")
 
 def grid_to_graph():
+    """Create a graph where the nodes are the junctions in the grid."""
     visited = np.zeros_like(grid, dtype=bool)
     for node in nodes:
         visited[node[0], node[1]] = True

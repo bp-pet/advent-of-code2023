@@ -3,7 +3,6 @@ with open("day15.txt", 'r') as f:
 
 commands = input.split(",")
 
-
 def string_to_hash(string):
     hash = 0
     for c in string:

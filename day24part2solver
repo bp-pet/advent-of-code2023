@@ -1,3 +1,7 @@
+"""
+Simple solution using sympy solver on the system of non-linear equations
+"""
+
 import numpy as np
 import sympy as sp
 
@@ -11,7 +15,7 @@ class Particle:
 
 class Field:
     def __init__(self, particles: list[Particle]):
-        self.particles = particles[:3]
+        self.particles = particles
     
     def __str__(self):
         result = ""

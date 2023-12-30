@@ -1,26 +1,35 @@
-import numpy as np
+"""
+The idea is that instead of considering the border as having thickness 1 and dealing
+with that while scanning it later, we consider it as having thickness 0, calculate
+the area inside it, then add the remaining area along the edges separately;
+- for each straight border tile adds half a unit of area
+- each inside/interior/convex corner adds 3/4 of an area unit
+- each outside/exterior/concave corner adds 1/4 of an area unit
+On a simple square we can see the fact that the number of inside corners is always
+4 larger than the number of outside corners (a square has 4 inside and 0 outside corners).
+Using this knowledge, we can just use the total number of corners, which we know from the
+input, to figure out how many corners of each type there are.
 
-with open("day18demo.txt", "r") as f:
+For the actual area calculation, we scan the structure from top down, each time collapsing
+the top-most border to the next one below it, adding the area. This requires considering
+a few cases.
+"""
+
+# get directions from input
+with open("day18.txt", "r") as f:
     input = f.read()
-
 lines = input.split("\n")
-
 directions = []
-
 hex_dir_dict = {0: "R", 1: "D", 2: "L", 3: "U"}
-
 for line in lines:
     hex = line.split(" ")[2][1:-1]
-    print(hex)
     distance = int(hex[1:6], 16)
     direction = hex_dir_dict[int(hex[6])]
     directions.append((direction, distance))
 
+# find corners
 current_pos = [0, 0]
-max_x = 0
-min_x = 0
-max_y = 0
-min_y = 0
+corners = []
 for direction in directions:
     if direction[0] == "R":
         current_pos[1] += direction[1]
@@ -32,98 +41,85 @@ for direction in directions:
         current_pos[0] += direction[1]
     else:
         raise Exception("Problem")
-    if current_pos[0] > max_x:
-        max_x = current_pos[0]
-    if current_pos[0] < min_x:
-        min_x = current_pos[0]
-    if current_pos[1] > max_y:
-        max_y = current_pos[1]
-    if current_pos[1] < min_y:
-        min_y = current_pos[1]
+    corner = tuple(current_pos)
+    corners.append(corner)
 
-x_size = max_x - min_x + 1
-y_size = max_y - min_y + 1
-
-grid = np.zeros([x_size, y_size])
-current_pos = [-min_x, -min_y]
-
-grid[current_pos[0], current_pos[1]] = 1
+# count borders and corners:
+straight_border_count = 0
+outside_corner_count = (len(directions) - 4) // 2
+inside_corner_count = outside_corner_count + 4
 for direction in directions:
-    x_grow = 0
-    y_grow = 0
-    if direction[0] == "R":
-        for i in range(direction[1]):
-            current_pos[1] += 1
-            grid[current_pos[0], current_pos[1]] = 1
-    elif direction[0] == "L":
-        for i in range(direction[1]):
-            current_pos[1] -= 1
-            grid[current_pos[0], current_pos[1]] = 1
-    elif direction[0] == "U":
-        for i in range(direction[1]):
-            current_pos[0] -= 1
-            grid[current_pos[0], current_pos[1]] = 1
-    elif direction[0] == "D":
-        for i in range(direction[1]):
-            current_pos[0] += 1
-            grid[current_pos[0], current_pos[1]] = 1
+    straight_border_count += direction[1] - 1
+area = int(0.75 * inside_corner_count + 0.25 * outside_corner_count + 0.5 * straight_border_count)
+
+# makes sure that 0 is on same height with 1, 2 with 3, etc
+if directions[0][0] in ["R", "L"]:
+    corners = [corners[-1]] + corners[:-1]
+
+class Pair:
+    """Simply a pair of corners, which are connected in the path by a horizontal
+    line. Can be identified by one height (of both corners) and the two horizontal
+    coordinates of the corners."""
+
+    def __init__(self, height, end1, end2):
+        self.height = height
+        if end1 < end2:
+            self.left, self.right = end1, end2
+        else:
+            self.left, self.right = end2, end1
+    
+    def __str__(self):
+        return f"Pair with height {self.height} from {self.left} to {self.right}"
+
+# make pairs of corners on the same height
+pairs = []
+for i in range(len(corners) // 2):
+    height = corners[2 * i][0]
+    end1 = corners[2 * i][1]
+    end2 = corners[2 * i + 1][1]
+    pairs.append(Pair(height, end1, end2))
+pairs.sort(key=lambda x: x.height)
+
+# add the area scanning from top down
+while len(pairs) > 1:
+    top = pairs.pop(0)
+    for i, bottom in enumerate(pairs):
+        # find the first pair which is below current and not outside of it
+        left_outside = not (top.left <= bottom.left <= top.right)
+        right_outside = not (top.left <= bottom.right <= top.right)
+        left_on = (bottom.left in [top.left, top. right])
+        right_on = (bottom.right in [top.left, top. right])
+        if left_outside and right_outside:
+            # unrelated case
+            continue
+        bottom = pairs.pop(i)
+        break
+    if left_outside or right_outside:
+        # towards outside case
+        if left_outside:
+            new_pairs = [Pair(bottom.height, bottom.left, top.right)]
+        else:
+            new_pairs = [Pair(bottom.height, top.left, bottom.right)]
+    elif right_on and left_on:
+        # rectangle case
+        new_pairs = []
+    elif (not right_on) and (not left_on):
+        # between case
+        new_pairs = [Pair(bottom.height, top.left, bottom.left),
+                     Pair(bottom.height, bottom.right, top.right)]
     else:
-        raise Exception("Problem")
+        # towards inside case
+        if left_on:
+            new_pairs = [Pair(bottom.height, bottom.right, top.right)]
+        else:
+            new_pairs = [Pair(bottom.height, bottom.left, top.left)]
+    area += (bottom.height - top.height) * (top.right - top.left)
+    for new_pair in new_pairs:
+        index_to_insert = 0
+        for i in range(len(pairs)):
+            if new_pair.height <= pairs[i].height:
+                index_to_insert = i
+                break
+        pairs.insert(index_to_insert, new_pair)
 
-
-def show_grid():
-    result = ""
-    for i in range(grid.shape[0]):
-        for j in range(grid.shape[1]):
-            result += "#" if grid[i, j] else "."
-        result += "\n"
-    return result[:-1]
-
-grid = np.concatenate([np.zeros([grid.shape[0], 1]), grid, np.zeros([grid.shape[0], 1])], axis=1)
-grid = np.concatenate([np.zeros([1, grid.shape[1]]), grid, np.zeros([1, grid.shape[1]])], axis=0)
-
-# with open("test.txt", 'w') as f:
-#     f.write(show_grid())
-
-print(grid.shape)
-
-raise Exception
-
-visited = np.zeros_like(grid)
-
-def is_valid_pos(pos):
-    if pos[0] < 0 or pos[0] >= grid.shape[0]:
-        return False
-    if pos[1] < 0 or pos[1] >= grid.shape[1]:
-        return False
-    return True
-
-def find_full_area(i, j):
-    area = [(i, j)]
-    queue = [(i, j)]
-    visited[i, j] = True
-    while len(queue) > 0:
-        current = queue.pop(0)
-        for i in [-1, 1]:
-            next = (current[0] + i, current[1])
-            if is_valid_pos(next) and not visited[next] and not grid[next]:
-                visited[next] = 1
-                queue.append(next)
-                area.append(next)
-        for j in [-1, 1]:
-            next = (current[0], current[1] + j)
-            if is_valid_pos(next) and not visited[next] and not grid[next]:
-                visited[next] = 1
-                queue.append(next)
-                area.append(next)
-    return len(area)
-
-outside = find_full_area(0, 0)
-path = len(np.argwhere(grid))
-total = grid.shape[0] * grid.shape[1]
-inside = total - outside - path
-print("total", total, "should be", 108)
-print("path", path, "should be", 38)
-print("outside", outside, "should be", 46)
-print("inside", inside)
-print("final answer", inside + path)
+print(area)

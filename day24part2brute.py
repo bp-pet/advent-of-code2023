@@ -1,3 +1,13 @@
+"""
+DOES NOT WORK
+
+Brute force solution: iterating through possible starting velocities and finding the starting
+position for each.
+
+Already made sure none of the particles' trajectories intersect or are parallel (code not
+included.)
+"""
+
 import numpy as np
 import sympy as sp
 
@@ -8,30 +18,10 @@ class Particle:
     
     def __str__(self):
         return f"Particle - pos {self.pos}, vel {self.vel}"
-    
-    def find_intersection_with(self, other: "Particle") -> tuple[float]:
-        """Return (x, y) intersection point, or None if intersection is in the past"""
-        A = np.array([[self.vel[0], -other.vel[0]],
-                      [self.vel[1], -other.vel[1]],
-                      [self.vel[2], -other.vel[2]]])
-        b = np.array([[other.pos[0] - self.pos[0]],
-                      [other.pos[1] - self.pos[1]],
-                      [other.pos[2] - self.pos[2]]])
-        try:
-            solution = np.linalg.solve(A, b)
-        except np.linalg.LinAlgError:
-            # no intersection
-            return None
-        t1, t2 = solution[0, 0], solution[1, 0]
-        if t1 < 0 or t2 < 0:
-            return None
-        intersection_x = self.pos[0] + t1 * self.vel[0]
-        intersection_y = self.pos[1] + t1 * self.vel[1]
-        return (intersection_x, intersection_y)
 
 class Field:
     def __init__(self, particles: list[Particle]):
-        self.particles = particles[:2]
+        self.particles = particles
         self.Ab = None
         self.set_up_system()
     
@@ -50,23 +40,25 @@ class Field:
                 self.Ab[3 * i + j, -1] = particle.pos[j]
     
     def get_perfect_vel(self):
+        """List all velocities up to some value and sort them. Only use first 3
+        particles."""
+        self.particles = self.particles[:3]
         boundary = 40
         start_vels = []
-        for i in range(boundary + 1):
-            for ii in [-1, 1]:
-                for j in range(boundary + 1):
-                    for jj in [-1, 1]:
-                        for k in range(boundary + 1):
-                            for kk in [-1, 1]:
-                                start_vels.append((i * ii, j * jj, k * kk))
+        for i in range(-boundary, boundary + 1):
+            for j in range(-boundary, boundary + 1):
+                for k in range(-boundary, boundary + 1):
+                    start_vels.append((i, j, k))
         start_vels.sort(key=lambda x: sum(abs(i) for i in x))
         for v0 in start_vels:
             pos = self.get_perfect_pos(v0)
             if pos is not None:
-                print(pos)
+                print("Found result", pos)
                 raise Exception
     
     def get_perfect_pos(self, v0):
+        """For a given starting velocity, find starting position by solving a system
+        of linear equations. If no solutions, then starting velocity is not good."""
         for i, particle in enumerate(self.particles):
             for j in range(3):
                 self.Ab[3 * i + j, 3 + i] = v0[j] - particle.vel[j]
@@ -81,29 +73,6 @@ class Field:
                     return None
                 break
         return np.array(reduced[:, -1])[:3, 0]
-    
-    # def check_for_parallel_lines(self):
-    #     for i, particle1 in enumerate(self.particles):
-    #         for particle2 in self.particles[i+1:]:
-    #             v1 = particle1.vel
-    #             v2 = particle2.vel
-    #             k1 = v2[0] / v1[0]
-    #             k2 = v2[1] / v1[1]
-    #             k3 = v2[2] / v1[2]
-    #             if np.isclose(k1, k2) and np.isclose(k2, k3):
-    #                 print(particle1)
-    #                 print(particle2)
-
-    # def get_all_intersections(self) -> int:
-    #     """Return number of pairs that cross within area"""
-    #     counter = 0
-    #     for i, particle1 in enumerate(self.particles):
-    #         for particle2 in self.particles[i+1:]:
-    #             intersection = particle1.find_intersection_with(particle2)
-    #             if intersection is not None:
-    #                 counter += 1
-    #     print(counter)
-    #     return counter
 
 class Parser:
     def parse_from_file(filename) -> Field:

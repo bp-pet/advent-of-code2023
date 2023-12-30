@@ -40,7 +40,6 @@ def check_if_array_is_seen(a):
             return i
     return None
 
-
 seen = [get_binary_grid()]
 
 n = 1000000000

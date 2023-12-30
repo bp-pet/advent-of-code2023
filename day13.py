@@ -18,7 +18,6 @@ grids = []
 for module in modules:
     grids.append(np.array([list(i) for i in module.split("\n")]))
 
-
 def get_horizontal_mirrors(grid):
     horizontal_mirrors = []
     for i in range(grid.shape[0] - 1):

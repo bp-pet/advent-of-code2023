@@ -1,3 +1,17 @@
+"""
+This solution is based specifically on the given input. Observing it shows that the module
+that we are interested in is influenced by 4 other modules. Recording when each of them
+becomes active shows that they each have a period. Getting the least common multiple of the
+4 periods immediately gives the answer.
+
+It should be noted that there is no guarantee given an arbitrary input that this would even
+work. It could even be that the 4 modules in question are periodic for some time, but not
+infinitely, which would make this method useless. However, a general solution seems way too
+difficult and apparently not needed here.
+"""
+
+from math import gcd
+
 class Signal:
     def __init__(self, pulse: int, source: str, target: str):
         self.pulse = pulse
@@ -89,9 +103,13 @@ class SignalProcessor:
         while len(self.signals) > 0:
             signal = self.signals.pop(0)
             self.output_log[signal.pulse] += 1
+
+            # DEBUGGING FOR FINDING MODULE ACTIVATION #####
             if signal.target == "bb":
                 if self.modules["bb"].state["xc"] == 1:
                     print(self.current_press)
+            ###############################################
+
             if signal.target not in self.modules:
                 continue
             target = self.modules[signal.target]
@@ -135,25 +153,24 @@ class Parser:
 processor = Parser("day20.txt").parse()
 # processor.process_n_presses(100000)
 
+# required modules are ct, kp, ks, xc
+ct_activation = [3796, 7593, 11390]
+kp_activation = [3732, 7465, 11198]
+ks_activation = [3906, 7813, 11720]
+xc_activation = [3822, 7645, 11468]
 
-ct = [3796, 7593, 11390]
-kp = [3732, 7465, 11198]
-ks = [3906, 7813, 11720]
-xc = [3822, 7645, 11468]
-
-for l in [ct, kp, ks, xc]:
+# make sure the activation of each module is periodic, at least at the start
+for l in [ct_activation, kp_activation, ks_activation, xc_activation]:
     assert l[1] - l[0] == l[2] - l[1]
 
-ct_diff = ct[1] - ct[0]
-kp_diff = kp[1] - kp[0]
-ks_diff = ks[1] - ks[0]
-xc_diff = xc[1] - xc[0]
+ct_period = ct_activation[1] - ct_activation[0]
+kp_period = kp_activation[1] - kp_activation[0]
+ks_period = ks_activation[1] - ks_activation[0]
+xc_period = xc_activation[1] - xc_activation[0]
 
-diffs = [ct_diff, kp_diff, ks_diff, xc_diff]
+periods = [ct_period, kp_period, ks_period, xc_period]
 
-
-from math import gcd
-lcm = 1
-for i in diffs:
-    lcm = lcm*i//gcd(lcm, i)
-print(lcm)
+result = 1
+for i in periods:
+    result = result * i // gcd(result, i)
+print(result)

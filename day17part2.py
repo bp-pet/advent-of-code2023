@@ -4,14 +4,6 @@ import networkx as nx
 with open("day17.txt", 'r') as f:
     input = f.read()
 
-# input = "12345\n56789"
-    
-# input = """111111111111
-# 999999999991
-# 999999999991
-# 999999999991
-# 999999999991"""
-
 directions = [0, 1, 2, 3]  # ["r", "l", "u", "d"]
 
 grid = np.array([list(i) for i in input.split("\n")], dtype=int)
@@ -37,13 +29,16 @@ G.add_nodes_from(node_list)
 print("Finished adding nodes")
 
 def get_target_node(source_node: tuple, direction: int):
+
+    # make sure going in opposite direction is not possible
     if (source_node[2 + 0] and direction == 1) or (source_node[2 + 1] and direction == 0) or (source_node[2 + 2] and direction == 3) or (source_node[2 + 3] and direction == 2):
-        # make sure going in opposite direction is not possible
         return
+
+    # make sure turning before 4 steps not possible
     if 0 < max(source_node[2:]) < 4:
         if direction != np.argmax(source_node[2:]):
-            # make sure turning before 4 steps not possible
             return
+
     target_node = list(source_node)
     target_node[2 + direction] += 1
     for not_direction in directions:
@@ -89,27 +84,3 @@ print("Finished adding start and end")
 
 result = nx.shortest_path_length(G, start_node_name, finish_node_name, "weight")
 print(result)
-
-# import matplotlib.pyplot as plt
-# nx.draw(G)
-# plt.show()
-
-# path = nx.shortest_path(G, start_node_name, finish_node_name, "weight")
-# grid = np.array(grid, dtype=str)
-# for p in path[1:-1]:
-#     grid[p[0], p[1]] = "x"
-# s = ""
-# for i in range(grid.shape[0]):
-#     for j in range(grid.shape[1]):
-#         s += grid[i, j]
-#     s += "\n"
-
-# print(path)
-# print(s)
-# print(grid.shape)
-# # test_node = (grid.shape[0] - 2, grid.shape[1] - 1, 0, 0, 0, 3)
-# test_node = (0, 7, 7, 0, 0, 0)
-# print(test_node)
-# out_edges = G.out_edges(test_node)
-# for out_edge in out_edges:
-#     print("  ", out_edge[1])

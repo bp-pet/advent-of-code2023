@@ -78,11 +78,6 @@ def show_grid():
 grid = np.concatenate([np.zeros([grid.shape[0], 1]), grid, np.zeros([grid.shape[0], 1])], axis=1)
 grid = np.concatenate([np.zeros([1, grid.shape[1]]), grid, np.zeros([1, grid.shape[1]])], axis=0)
 
-# with open("test.txt", 'w') as f:
-#     f.write(show_grid())
-
-# raise Exception
-
 visited = np.zeros_like(grid)
 
 def is_valid_pos(pos):

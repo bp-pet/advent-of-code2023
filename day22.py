@@ -1,5 +1,3 @@
-import math
-
 class Block:
     def __init__(self, start: tuple[int], end: tuple[int]):
         self.start = start
@@ -47,19 +45,6 @@ class Field:
             result += "\n  " + str(block)
         return result
     
-    # def get_floor(self):
-    #     min_x, max_x, min_y, max_y = math.inf, -math.inf, math.inf, -math.inf
-    #     for block in self.blocks:
-    #         if block.get_lowest_on_axis(0) < min_x:
-    #             min_x = block.get_lowest_on_axis(0)
-    #         if block.get_highest_on_axis(0) > max_x:
-    #             max_x = block.get_highest_on_axis(0)
-    #         if block.get_lowest_on_axis(1) < min_y:
-    #             min_y = block.get_lowest_on_axis(1)
-    #         if block.get_highest_on_axis(1) > max_y:
-    #             max_y = block.get_highest_on_axis(1)
-    #     self.floor = ((min_x, max_x), (min_y, max_y))
-    
     def drop_all(self):
         free_blocks = [True] * len(self.blocks)
         for i, block in enumerate(self.blocks):
@@ -95,18 +80,6 @@ class Parser:
             end_coords = [int(i) for i in end_raw.split(",")]
             blocks.append(Block(start_coords, end_coords))
         return Field(blocks)
-
     
 field = Parser().parse_file("day22.txt")
 print(field.drop_all())
-    
-# test = """1,0,1~2,0,1
-# 2,0,2~3,0,2
-# 1,0,3~2,0,3
-# 1,0,2~1,0,2
-# 1,1,3~2,1,3"""
-
-# field = Parser().parse_str(test)
-# print(field)
-# print(field.drop_all())
-# print(field)
