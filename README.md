@@ -1,6 +1,4 @@
-Advent of Code 2023
-https://adventofcode.com/2023
-by bp-pet
+Advent of Code 2023 (https://adventofcode.com/2023) by bp-pet
 
 The code was written with the purpose of solving the problems as quickly as possible. In some cases this means that the readability is not that good. As the days went on, I figured out better ways to do things, so the format should be better (for example having a separate parser).
 
