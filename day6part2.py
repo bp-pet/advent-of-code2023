@@ -1,7 +1,6 @@
 with open("day6.txt", 'r') as f:
     input = f.read()
 
-
 times_str, distances_str = input.split("\n")
 
 time = ""

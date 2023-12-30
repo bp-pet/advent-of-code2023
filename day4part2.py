@@ -1,13 +1,8 @@
 filename = "day4.txt"
 
-
 with open(filename, "r") as f:
     input = f.read()
 lines = input.split("\n")
-
-for line in lines:
-    if len(lines) == 0:
-        print("HERE")
 
 copies = {k: 1 for k in range(1, len(lines) + 1)}
 

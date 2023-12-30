@@ -42,7 +42,6 @@ def get_hand_value(hand_str):
             result.append(card_dict[h])
     return result
 
-
 hands.sort(key=get_hand_value)
 
 result = 0

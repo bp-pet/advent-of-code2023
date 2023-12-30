@@ -1,13 +1,31 @@
 import numpy as np
 
-with open("day21.txt", "r") as f:
+
+
+number_of_steps = 100
+padding = 9
+
+
+
+with open("day21demo.txt", "r") as f:
     input = f.read()
 
 grid = np.array([list(i) for i in input.split("\n")])
 
-S = tuple(np.argwhere(grid == "S")[0])
+# grid = np.array([[".", ".", "#"], [".", "S", "."], ["#", ".", "."]])
 
-number_of_steps = 64
+def get_tiled_grid(grid, padding=0):
+    original_x, original_y = grid.shape[0], grid.shape[1]
+    S = tuple(np.argwhere(grid == "S")[0])
+    grid[S[0], S[1]] = "."
+    temp = np.concatenate([grid] * (1 + 2 * padding), axis=0)
+    result = np.concatenate([temp] * (1 + 2 * padding), axis=1)
+    result[padding * original_x + S[0], padding * original_y + S[1]] = "S"
+    grid[S[0], S[1]] = "S"
+    return result
+
+grid = get_tiled_grid(grid, padding)
+S = tuple(np.argwhere(grid == "S")[0])
 
 is_saved = np.zeros(grid.shape + tuple([number_of_steps + 1]), dtype=bool)
 
@@ -55,11 +73,11 @@ def reachable_to_string():
 def count_reachable():
     return len(np.argwhere(reachable))
 
-# search(S, number_of_steps)
+search(S, number_of_steps)
 
 # print(reachable_to_string())
 
 
-# print(count_reachable())
+print(count_reachable())
 
-print(grid.shape)
+# print(grid.shape)

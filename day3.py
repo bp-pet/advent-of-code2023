@@ -1,6 +1,5 @@
 filename = "day3.txt"
 
-
 with open(filename, "r") as f:
     input = f.read()
 lines = input.split("\n")
@@ -9,8 +8,6 @@ lines = input.split("\n")
 new_lines = []
 new_lines.append("." * len(lines[0]))
 for line in lines:
-    if len(line) == 0:
-        continue
     new_lines.append("." + line + ".")
 new_lines.append("." * len(lines[0]))
 lines = new_lines

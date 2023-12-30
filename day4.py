@@ -8,8 +8,6 @@ lines = input.split("\n")
 total_score = 0
 
 for line in lines:
-    if len(line) == 0:
-        continue
     line = line.split(":")[1]
     winning_str = line.split("|")[0]
     winning_list = []

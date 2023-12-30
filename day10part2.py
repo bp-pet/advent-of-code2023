@@ -50,20 +50,20 @@ def get_opposite_dir(d):
     elif d == 'r':
         return 'l'
     else:
-        raise Exception("Something is wrong")
+        raise Exception("Invalid direction")
 
 def get_new_dir(old_dir, tile):
     """
     Previous move was in direction old_dir, arriving at tile.
     """
     arrival_dir = get_opposite_dir(old_dir)
-    dirs = legend[tile]
-    if arrival_dir == dirs[0]:
-        return dirs[1]
-    elif arrival_dir == dirs[1]:
-        return dirs[0]
+    possible_directions = legend[tile]
+    if arrival_dir == possible_directions[0]:
+        return possible_directions[1]
+    elif arrival_dir == possible_directions[1]:
+        return possible_directions[0]
     else:
-        raise Exception("Something is wrong")
+        raise Exception("Pipe approached from direction where it doesn't have an opening")
 
 def get_tile(pos):
     return grid[pos[0]][pos[1]]
@@ -127,35 +127,28 @@ def check_if_visited(pos):
 def check_if_path(pos):
     return path_grid[pos[0]][pos[1]]
 
-def get_approach_type(incoming_dir, flow_dir):
-    if incoming_dir == 'd':
-        if flow_dir == 'r':
+def get_approach_type(incoming_direction, flow_direction):
+    if incoming_direction == 'd':
+        if flow_direction == 'r':
             return 0
-        elif flow_dir == 'l':
+        elif flow_direction == 'l':
             return 1
-        else:
-            raise Exception("This is not good")
-    elif incoming_dir == 'u':
-        if flow_dir == 'r':
+    elif incoming_direction == 'u':
+        if flow_direction == 'r':
             return 1
-        elif flow_dir == 'l':
+        elif flow_direction == 'l':
             return 0
-        else:
-            raise Exception("This is not good")
-    elif incoming_dir == 'r':
-        if flow_dir == 'u':
+    elif incoming_direction == 'r':
+        if flow_direction == 'u':
             return 0
-        elif flow_dir == 'd':
+        elif flow_direction == 'd':
             return 1
-        else:
-            raise Exception("This is not good")
-    elif incoming_dir == 'l':
-        if flow_dir == 'u':
+    elif incoming_direction == 'l':
+        if flow_direction == 'u':
             return 1
-        elif flow_dir == 'd':
+        elif flow_direction == 'd':
             return 0
-        else:
-            raise Exception("This is not good")
+    raise Exception("Problem with approach direction towards pipe")
 
 def find_full_area(i, j):
     area = [(i, j)]

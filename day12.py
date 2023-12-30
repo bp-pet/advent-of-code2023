@@ -1,3 +1,5 @@
+from itertools import combinations
+
 with open("day12.txt", 'r') as f:
     input = f.read()
 
@@ -11,20 +13,17 @@ for line_raw in lines_raw:
 
 
 def count_missing(line):
-    """
-    For a line with ?s, count how many #s still need to be added
-    """
+    """For a line with ?s, count how many #s still need to be added"""
     total_count = sum(line[1])
     occurences = line[0].count("#")
     return total_count - occurences
 
 def count_questions(line):
+    """Count how many question marks are in a line"""
     return line[0].count("?")
 
 def check_validity(line):
-    """
-    For a line without ?s, check if it is valid.
-    """
+    """For a line without ?s, check if it is valid"""
     conditions_lengths = [j for j in [len(i) for i in line[0].split(".")] if j != 0]
     return line[1] == conditions_lengths
 
@@ -44,7 +43,6 @@ def replace_questions(line, selected):
     new_line = (temp, line[1])
     return new_line
 
-from itertools import combinations
 
 def generate_variants(n, k):
     return list(combinations(list(range(n)), k))

@@ -31,14 +31,6 @@ for j in range(size_y):
     if not found:
         empty_cols.append(j)
 
-# for r in empty_rows[::-1]:
-#     grid.insert(r, ["."] * size_y)
-# size_x += len(empty_rows)
-# for c in empty_cols[::-1]:
-#     for i in range(size_x):
-#         grid[i].insert(c, ".")
-# size_y += len(empty_cols)
-
 stars = []
 for i in range(size_x):
     for j in range(size_y):
@@ -46,7 +38,7 @@ for i in range(size_x):
             stars.append((i, j))
 
 def is_number_between_numbers(x, a, b):
-    # check if x is between a and b
+    """ Check if x is between a and b."""
     return (x - a) * (b - x) > 0
 
 multiplier = 1000000

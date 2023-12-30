@@ -31,7 +31,7 @@ class Particle:
 
 class Field:
     def __init__(self, particles: list[Particle]):
-        self.particles = particles
+        self.particles = particles[:2]
         self.Ab = None
         self.set_up_system()
     
@@ -50,20 +50,21 @@ class Field:
                 self.Ab[3 * i + j, -1] = particle.pos[j]
     
     def get_perfect_vel(self):
-        boundary = 100
-        total_iterations = (2 * boundary + 1) ** 3
-        print(total_iterations)
-        counter = 0
-        for i in range(-boundary, boundary + 1):
-            for j in range(-boundary, boundary + 1):
-                for k in range(-boundary, boundary + 1):
-                    counter += 1
-                    if counter % 1000 == 0:
-                        print(f"{counter} out of {total_iterations}")
-                    pos = self.get_perfect_pos((i, j, k))
-                    if pos is not None:
-                        print(pos)
-                        raise Exception
+        boundary = 40
+        start_vels = []
+        for i in range(boundary + 1):
+            for ii in [-1, 1]:
+                for j in range(boundary + 1):
+                    for jj in [-1, 1]:
+                        for k in range(boundary + 1):
+                            for kk in [-1, 1]:
+                                start_vels.append((i * ii, j * jj, k * kk))
+        start_vels.sort(key=lambda x: sum(abs(i) for i in x))
+        for v0 in start_vels:
+            pos = self.get_perfect_pos(v0)
+            if pos is not None:
+                print(pos)
+                raise Exception
     
     def get_perfect_pos(self, v0):
         for i, particle in enumerate(self.particles):
@@ -125,4 +126,4 @@ class Parser:
 filename = "day24.txt"
 
 field = Parser.parse_from_file(filename)
-# field.get_perfect_vel()
+field.get_perfect_vel()

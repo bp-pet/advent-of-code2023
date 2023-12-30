@@ -2,7 +2,6 @@ import math
 
 filename = "day5.txt"
 
-
 class SeedRange:
     def __init__(self, start, size=None, end=None):
         self.start = start
@@ -92,7 +91,6 @@ for module_str in modules_str[1:]:
     for seed_range in seed_ranges:
         new_seed_ranges += module.transform_seed_range(seed_range)
     seed_ranges = new_seed_ranges
-
 
 result = min(s.start for s in seed_ranges)
 print(result)

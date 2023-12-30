@@ -46,20 +46,20 @@ def get_opposite_dir(d):
     elif d == 'r':
         return 'l'
     else:
-        raise Exception("Something is wrong")
+        raise Exception("Invalid direction")
 
 def get_new_dir(old_dir, tile):
     """
     Previous move was in direction old_dir, arriving at tile.
     """
     arrival_dir = get_opposite_dir(old_dir)
-    dirs = legend[tile]
-    if arrival_dir == dirs[0]:
-        return dirs[1]
-    elif arrival_dir == dirs[1]:
-        return dirs[0]
+    possible_directions = legend[tile]
+    if arrival_dir == possible_directions[0]:
+        return possible_directions[1]
+    elif arrival_dir == possible_directions[1]:
+        return possible_directions[0]
     else:
-        raise Exception("Something is wrong")
+        raise Exception("Pipe approached from direction where it doesn't have an opening")
 
 def get_tile(pos):
     return grid[pos[0]][pos[1]]

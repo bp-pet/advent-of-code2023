@@ -35,7 +35,6 @@ def find_gears(s):
             result += i
     return result
 
-
 gears = {}
 for index, line in enumerate(lines):
     numbers = find_numbers(line)

@@ -2,6 +2,7 @@ import numpy as np
 import random
 
 
-A = ["a", "b", "c"]
+A = np.array([1, 2, 3])
+B = np.array([2, 6, 18])
 
-print(random.choice(A))
+print(B / A)

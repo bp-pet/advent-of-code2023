@@ -1,3 +1,5 @@
+from math import gcd
+
 with open("day8.txt", 'r') as f:
     input = f.read()
 
@@ -5,7 +7,6 @@ lines = input.split("\n")
 
 directions = lines[0]
 modules_str = lines[2:]
-
 
 # process modules
 modules = {}
@@ -30,9 +31,10 @@ for p in current_pos:
         direction_index = move_counter % len(directions)
         if p[2] == "Z":
             checkpoint = (p, direction_index)
+            # assume each starting module reaches only one target module and always at the end of the move list
             if checkpoint in checkpoints:
                 if len(checkpoints) > 1:
-                    raise Exception("Something is wrong")
+                    raise Exception("Multiple target modules reached from one starting module, so solution is not valid")
                 break
             checkpoints.append(checkpoint)
         direction = directions[direction_index]
@@ -43,24 +45,8 @@ for p in current_pos:
         move_counter += 1
     vals.append(move_counter // 2)
 
-print(vals)
-
-from math import gcd
-lcm = 1
+# find lcm of vals
+result = 1
 for i in vals:
-    lcm = lcm*i//gcd(lcm, i)
-print(lcm)
-
-
-
-# while set(current_pos) != set(targets):
-#     direction = directions[move_counter % len(directions)]
-
-#     for i, p in enumerate(current_pos):
-#         if direction == "L":
-#             current_pos[i] = modules[current_pos[i]][0]
-#         else:
-#             current_pos[i] = modules[current_pos[i]][1]
-#     move_counter += 1
-
-# print(move_counter)
+    result = result*i//gcd(result, i)
+print(result)

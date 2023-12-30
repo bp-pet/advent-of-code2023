@@ -3,7 +3,6 @@ from collections import Counter
 with open("day7.txt", 'r') as f:
     input = f.read()
 
-
 hands = input.split("\n")
 
 card_dict = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
@@ -32,7 +31,6 @@ def get_hand_value(hand_str):
         else:
             result.append(card_dict[h])
     return result
-
 
 hands.sort(key=get_hand_value)
 

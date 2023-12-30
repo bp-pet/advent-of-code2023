@@ -1,0 +1,63 @@
+import numpy as np
+import sympy as sp
+
+class Particle:
+    def __init__(self, pos: tuple[int], vel: tuple[int]):
+        self.pos = pos
+        self.vel = vel
+    
+    def __str__(self):
+        return f"Particle - pos {self.pos}, vel {self.vel}"
+
+class Field:
+    def __init__(self, particles: list[Particle]):
+        self.particles = particles[:3]
+    
+    def __str__(self):
+        result = ""
+        for particle in self.particles:
+            result += "\n  " + str(particle)
+        return result
+
+class Parser:
+    def parse_from_file(filename) -> Field:
+        with open(filename, "r") as f:
+            raw = f.read()
+        particles = []
+        for line in raw.split("\n"):
+            pos_raw_list = line.split(" ")[:3]
+            vel_raw_list = line.split(" ")[4:]
+            vel_raw_list = [v for v in vel_raw_list if len(v) > 0]
+            for i in range(2):
+                # remove commas
+                pos_raw_list[i] = pos_raw_list[i][:-1]
+                vel_raw_list[i] = vel_raw_list[i][:-1]
+            pos = [int(p) for p in pos_raw_list]
+            vel = [int(v) for v in vel_raw_list]
+            particles.append(Particle(pos, vel))
+        return Field(particles)
+
+filename = "day24.txt"
+
+field = Parser.parse_from_file(filename)
+
+p0x, p0y, p0z, v0x, v0y, v0z, t1, t2, t3 = sp.symbols("p0x p0y p0z v0x v0y v0z t1 t2 t3")
+
+particle1 = field.particles[0]
+particle2 = field.particles[1]
+particle3 = field.particles[2]
+
+solution = sp.solve([p0x + t1 * v0x - particle1.pos[0] - t1 * particle1.vel[0],
+                    p0y + t1 * v0y - particle1.pos[1] - t1 * particle1.vel[1],
+                    p0z + t1 * v0z - particle1.pos[2] - t1 * particle1.vel[2],
+                    p0x + t2 * v0x - particle2.pos[0] - t2 * particle2.vel[0],
+                    p0y + t2 * v0y - particle2.pos[1] - t2 * particle2.vel[1],
+                    p0z + t2 * v0z - particle2.pos[2] - t2 * particle2.vel[2],
+                    p0x + t3 * v0x - particle3.pos[0] - t3 * particle3.vel[0],
+                    p0y + t3 * v0y - particle3.pos[1] - t3 * particle3.vel[1],
+                    p0z + t3 * v0z - particle3.pos[2] - t3 * particle3.vel[2]],
+                    p0x, p0y, p0z, v0x, v0y, v0z, t1, t2, t3)
+
+
+result = sum(solution[0][:3])
+print(result)

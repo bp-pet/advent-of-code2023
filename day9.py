@@ -1,9 +1,7 @@
 with open("day9.txt", 'r') as f:
     input = f.read()
 
-
 lines = input.split("\n")
-
 
 def get_next(numbers):
     if numbers == [0] * len(numbers):
