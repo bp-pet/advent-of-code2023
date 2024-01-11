@@ -1,6 +1,6 @@
 from collections import Counter
 
-with open("day7.txt", 'r') as f:
+with open("test.txt", 'r') as f:
     input = f.read()
 
 
@@ -47,6 +47,7 @@ hands.sort(key=get_hand_value)
 result = 0
 
 for i, hand in enumerate(hands):
+    print(hand.split(" ")[0])
     result += (i + 1) * int(hand.split(" ")[1])
 
 print(result)

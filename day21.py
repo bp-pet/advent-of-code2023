@@ -7,7 +7,7 @@ grid = np.array([list(i) for i in input.split("\n")])
 
 S = tuple(np.argwhere(grid == "S")[0])
 
-number_of_steps = 64
+number_of_steps = 5
 
 is_saved = np.zeros(grid.shape + tuple([number_of_steps + 1]), dtype=bool)
 
